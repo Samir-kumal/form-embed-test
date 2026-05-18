@@ -110,6 +110,8 @@
 
     .btn-primary { background: #3b82f6; color: #fff; }
     .btn-primary:hover { background: #2563eb; }
+    .btn-ghost { background: #f1f5f9; color: #475569; }
+    .btn-ghost:hover { background: #e2e8f0; }
   </style>
 </head>
 <body>
@@ -177,6 +179,26 @@
     </div>
 
     <button class="btn btn-primary" onclick="loadForm()">Load Form</button>
+
+    <hr />
+
+    <div class="field">
+      <label>Embed Code</label>
+      <textarea id="embedCode" readonly rows="5" style="
+        width:100%;
+        padding:8px 10px;
+        border:1px solid #e2e8f0;
+        border-radius:8px;
+        font-size:0.72rem;
+        font-family:monospace;
+        background:#f8fafc;
+        color:#1e293b;
+        resize:none;
+        line-height:1.5;
+      "></textarea>
+    </div>
+
+    <button class="btn btn-ghost" onclick="copyEmbed()" id="copyBtn">Copy iframe</button>
   </div>
 
 <script>
@@ -204,7 +226,18 @@
   }
 
   function loadForm() {
-    document.getElementById('formFrame').src = buildUrl()
+    const url = buildUrl()
+    document.getElementById('formFrame').src = url
+    const code = `<iframe\n  src="${url}"\n  width="100%"\n  height="800"\n  frameborder="0"\n></iframe>`
+    document.getElementById('embedCode').value = code
+  }
+
+  function copyEmbed() {
+    const ta = document.getElementById('embedCode')
+    navigator.clipboard.writeText(ta.value)
+    const btn = document.getElementById('copyBtn')
+    btn.textContent = 'Copied!'
+    setTimeout(() => btn.textContent = 'Copy iframe', 1500)
   }
 
   loadForm()
