@@ -10,13 +10,12 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #f0f4f8;
-      min-height: 100vh;
+      height: 100vh;
       display: flex;
       gap: 20px;
       padding: 24px;
     }
 
-    /* ── Left: Form ── */
     .form-side {
       flex: 1;
       background: #fff;
@@ -33,7 +32,6 @@
       border: none;
     }
 
-    /* ── Right: Embed tester ── */
     .tester-side {
       width: 300px;
       flex-shrink: 0;
@@ -43,10 +41,7 @@
       padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      height: fit-content;
-      position: sticky;
-      top: 24px;
+      gap: 12px;
     }
 
     .tester-side h2 {
@@ -57,45 +52,23 @@
       color: #94a3b8;
     }
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .field label {
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: #475569;
-    }
-
-    .field input,
-    .field select {
-      height: 34px;
-      padding: 0 10px;
+    textarea {
+      flex: 1;
+      width: 100%;
+      padding: 10px;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.76rem;
+      font-family: monospace;
+      line-height: 1.6;
       color: #1e293b;
       background: #f8fafc;
+      resize: none;
       outline: none;
-      width: 100%;
       transition: border-color 0.15s;
     }
 
-    .field input:focus,
-    .field select:focus {
-      border-color: #3b82f6;
-      background: #fff;
-    }
-
-    .row2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    hr { border: none; border-top: 1px solid #f1f5f9; }
+    textarea:focus { border-color: #3b82f6; background: #fff; }
 
     .btn {
       width: 100%;
@@ -116,128 +89,38 @@
 </head>
 <body>
 
-  <!-- Left: Form iframe -->
   <div class="form-side">
     <iframe id="formFrame" src="" title="Lead Application"></iframe>
   </div>
 
-  <!-- Right: Embed tester -->
   <div class="tester-side">
-    <h2>Load Form</h2>
-
-    <div class="field">
-      <label>Base URL</label>
-      <select id="baseUrl">
-        <option value="https://reports.astoriacompany.com">Production</option>
-        <option value="http://localhost:3000">Localhost</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Form Token</label>
-      <input id="token" type="text" placeholder="paste token or full URL" value="46e3dcfb-5a5f-40fc-bf4c-cd16097ee278" />
-    </div>
-
-    <hr />
-
-    <div class="row2">
-      <div class="field">
-        <label>vendor_id</label>
-        <input id="vendorId" type="text" placeholder="YOUR_VID" />
-      </div>
-      <div class="field">
-        <label>sub_id</label>
-        <input id="subId" type="text" placeholder="YOUR_SUB" />
-      </div>
-    </div>
-
-    <div class="row2">
-      <div class="field">
-        <label>tier</label>
-        <select id="tier">
-          <option value="">ALL</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>lead_mode</label>
-        <select id="leadMode">
-          <option value="0">0 — test</option>
-          <option value="1">1 — live</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>dev_mode</label>
-      <select id="devMode">
-        <option value="true">on (show Fill Test Data)</option>
-        <option value="">off</option>
-      </select>
-    </div>
-
-    <button class="btn btn-primary" onclick="loadForm()">Load Form</button>
-
-    <hr />
-
-    <div class="field">
-      <label>Embed Code</label>
-      <textarea id="embedCode" readonly rows="5" style="
-        width:100%;
-        padding:8px 10px;
-        border:1px solid #e2e8f0;
-        border-radius:8px;
-        font-size:0.72rem;
-        font-family:monospace;
-        background:#f8fafc;
-        color:#1e293b;
-        resize:none;
-        line-height:1.5;
-      "></textarea>
-    </div>
-
-    <button class="btn btn-ghost" onclick="copyEmbed()" id="copyBtn">Copy iframe</button>
+    <h2>Embed Code</h2>
+    <textarea id="embedCode"><iframe
+  src="https://reports.astoriacompany.com/forms/46e3dcfb-5a5f-40fc-bf4c-cd16097ee278?vendor_id=YOUR_VID&sub_id=YOUR_SUB&lead_mode=0&dev_mode=true"
+  width="100%"
+  height="800"
+  frameborder="0"
+></iframe></textarea>
+    <button class="btn btn-primary" onclick="loadForm()">Load</button>
+    <button class="btn btn-ghost" onclick="copyCode()" id="copyBtn">Copy</button>
   </div>
 
 <script>
-  function buildUrl() {
-    let token = document.getElementById('token').value.trim()
-    const match = token.match(/\/forms\/([a-f0-9-]+)/i)
-    if (match) token = match[1]
-
-    const base     = document.getElementById('baseUrl').value
-    const vendorId = document.getElementById('vendorId').value.trim()
-    const subId    = document.getElementById('subId').value.trim()
-    const tier     = document.getElementById('tier').value
-    const leadMode = document.getElementById('leadMode').value
-    const devMode  = document.getElementById('devMode').value
-
-    const params = new URLSearchParams()
-    if (vendorId) params.set('vendor_id', vendorId)
-    if (subId)    params.set('sub_id', subId)
-    if (tier)     params.set('tier', tier)
-    params.set('lead_mode', leadMode)
-    if (devMode)  params.set('dev_mode', devMode)
-
-    const qs = params.toString()
-    return `${base}/forms/${token}${qs ? '?' + qs : ''}`
+  function extractSrc(code) {
+    const m = code.match(/src=["']([^"']+)["']/)
+    return m ? m[1] : null
   }
 
   function loadForm() {
-    const url = buildUrl()
-    document.getElementById('formFrame').src = url
-    const code = `<iframe\n  src="${url}"\n  width="100%"\n  height="800"\n  frameborder="0"\n></iframe>`
-    document.getElementById('embedCode').value = code
+    const src = extractSrc(document.getElementById('embedCode').value)
+    if (src) document.getElementById('formFrame').src = src
   }
 
-  function copyEmbed() {
-    const ta = document.getElementById('embedCode')
-    navigator.clipboard.writeText(ta.value)
+  function copyCode() {
+    navigator.clipboard.writeText(document.getElementById('embedCode').value)
     const btn = document.getElementById('copyBtn')
     btn.textContent = 'Copied!'
-    setTimeout(() => btn.textContent = 'Copy iframe', 1500)
+    setTimeout(() => btn.textContent = 'Copy', 1500)
   }
 
   loadForm()
